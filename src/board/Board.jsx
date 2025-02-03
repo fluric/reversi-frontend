@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Segment } from 'semantic-ui-react';
-import { StyledBoard, StyledButton, Cell, BoardRow } from './Board.style';
+import { StyledBoard, StyledButton, Cell, BoardRow, BoardContainer } from './Board.style';
 
 const BOARD_SIZE = 8;
 
@@ -19,7 +19,7 @@ const initializeBoard = () => {
   return board;
 };
 
-const Board = () => {
+export const Board = () => {
   const [board, setBoard] = useState(initializeBoard);
   const [currentPlayer, setCurrentPlayer] = useState('B');
 
@@ -43,19 +43,21 @@ const Board = () => {
     <Container textAlign="center">
       <Segment>
         <h2>Reversi - {currentPlayer === 'B' ? 'Black' : 'White'}'s Turn</h2>
-        <StyledBoard>
-          {board.map((row, rowIndex) => (
-            <BoardRow key={rowIndex}>
-              {row.map((cell, colIndex) => (
-                <Cell
-                  key={colIndex}
-                  className={cell ? (cell === 'B' ? 'black' : 'white') : ''}
-                  onClick={() => handleCellClick(rowIndex, colIndex)}
-                />
-              ))}
-            </BoardRow>
-          ))}
-        </StyledBoard>
+        <BoardContainer>
+          <StyledBoard>
+            {board.map((row, rowIndex) => (
+              <BoardRow key={rowIndex}>
+                {row.map((cell, colIndex) => (
+                  <Cell
+                    key={colIndex}
+                    className={cell ? (cell === 'B' ? 'black' : 'white') : ''}
+                    onClick={() => handleCellClick(rowIndex, colIndex)}
+                  />
+                ))}
+              </BoardRow>
+            ))}
+          </StyledBoard>
+        </BoardContainer>
         <StyledButton primary onClick={resetGame}>
           Restart Game
         </StyledButton>

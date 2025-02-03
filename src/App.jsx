@@ -1,11 +1,9 @@
 import Board from './board/Board';
 
-const App = () => {
+export default function App() {
   return (
     <>
       <Board />
     </>
   );
 };
-
-export default App
