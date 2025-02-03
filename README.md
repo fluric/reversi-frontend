@@ -10,5 +10,4 @@ To run app locally:
 
 ### Deployment
 
-[gh-pages](https://dev.to/yuribenjamin/how-to-deploy-react-app-in-github-pages-2a1f)  
-[webpage](https://fluric.github.io/react-app/)
+[web-app](https://fluric.github.io/reversi-frontend/) (with gh-pages)
