@@ -22,9 +22,13 @@ const initializeBoard = () => {
 export const Board = () => {
   const [board, setBoard] = useState(initializeBoard);
   const [currentPlayer, setCurrentPlayer] = useState('B');
+  const [lastMove, setLastMove] = useState(null);
+  const [validMoves, setValidMoves] = useState([]);
 
   const handleCellClick = (row, col) => {
     if (board[row][col] !== null) return; // Ignore occupied cells
+
+    setLastMove({ row, col }); // Store the last move's position
 
     // Copy the board state
     const newBoard = board.map((r) => [...r]);
@@ -37,6 +41,8 @@ export const Board = () => {
   const resetGame = () => {
     setBoard(initializeBoard());
     setCurrentPlayer('B');
+    setLastMove(null);
+    setValidMoves([{row: 0, col: 0}]);
   };
 
   return (
@@ -47,13 +53,19 @@ export const Board = () => {
           <StyledBoard>
             {board.map((row, rowIndex) => (
               <BoardRow key={rowIndex}>
-                {row.map((cell, colIndex) => (
-                  <Cell
-                    key={colIndex}
-                    className={cell ? (cell === 'B' ? 'black' : 'white') : ''}
-                    onClick={() => handleCellClick(rowIndex, colIndex)}
-                  />
-                ))}
+                {row.map((cell, colIndex) => {
+                  const isLastMove = lastMove?.row === rowIndex && lastMove?.col === colIndex;
+                  const isValidMove = validMoves.some((m) => m.row === rowIndex && m.col === colIndex);
+
+                  return (
+                    <Cell
+                      key={colIndex}
+                      isLastMove={isLastMove}
+                      isValidMove={isValidMove}
+                      className={cell ? (cell === 'B' ? 'black' : 'white') : ''}
+                      onClick={() => handleCellClick(rowIndex, colIndex)}
+                    />);
+                })}
               </BoardRow>
             ))}
           </StyledBoard>
