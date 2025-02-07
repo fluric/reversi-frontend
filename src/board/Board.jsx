@@ -24,6 +24,8 @@ const initializeBoard = () => {
 
 export const Board = () => {
   const [board, setBoard] = useState(initializeBoard);
+  const [finished, setFinished] = useState(false);
+  const [score, setScore] = useState({ black: 2, white: 2 });
   const [currentPlayer, setCurrentPlayer] = useState('B');
   const [lastMove, setLastMove] = useState(null);
   const [nextMoves, setNextMoves] = useState(new Map());
@@ -37,13 +39,15 @@ export const Board = () => {
     const key = nextMoves.keys().find(key => key.row === row && key.col === col);
     if (key == null) return;
 
-    const nextBoard = nextMoves.get(key);
-    setBoard(nextBoard);
+    const nextBoardInfo = nextMoves.get(key);
+    setBoard(nextBoardInfo.board);
+    setScore(nextBoardInfo.score);
+    setFinished(nextBoardInfo.finished);
     setLastMove({ row, col }); // Store the last move's position
     setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B'); // Toggle player
 
     const gameRequest = {
-      board: nextBoard,
+      board: nextBoardInfo.board,
       opponent: "WHITE"
     };
 
@@ -51,9 +55,11 @@ export const Board = () => {
     // The generated API client method may return a Promise.
     apiInstance.makeOpponentMove(gameRequest, (error, data, response) => {
       const map = new Map();
-      response.body.nextMoves.forEach(n => map.set(n.move, n.boardInfo.board))
+      response.body.nextMoves.forEach(n => map.set(n.move, n.boardInfo))
       setNextMoves(map)
       setBoard(response.body.boardInfo.board)
+      setScore(response.body.boardInfo.score);
+      setFinished(response.body.boardInfo.finished);
     })
   };
 
@@ -62,12 +68,26 @@ export const Board = () => {
     setBoard(board);
     setCurrentPlayer('B');
     setLastMove(null);
+    setFinished(false);
+    setScore({black: 2, white: 2})
 
     const map = new Map();
     const board1 = _.cloneDeep(board);
     board1[2][3] = 'B';
     board1[3][3] = 'B';
-    map.set({row: 2, col: 3}, board1)
+    map.set({row: 2, col: 3}, {board: board1, score: {black: 4, white: 1}, finished: false})
+    const board2 = _.cloneDeep(board);
+    board2[3][2] = 'B';
+    board2[3][3] = 'B';
+    map.set({row: 3, col: 2}, {board: board2, score: {black: 4, white: 1}, finished: false})
+    const board3 = _.cloneDeep(board);
+    board3[4][5] = 'B';
+    board3[4][4] = 'B';
+    map.set({row: 4, col: 5}, {board: board3, score: {black: 4, white: 1}, finished: false})
+    const board4 = _.cloneDeep(board);
+    board4[5][4] = 'B';
+    board4[4][4] = 'B';
+    map.set({row: 5, col: 4}, {board: board4, score: {black: 4, white: 1}, finished: false})
     setNextMoves(map);
   };
 
@@ -75,6 +95,10 @@ export const Board = () => {
     <Container textAlign="center">
       <Segment>
         <h2>Reversi - {currentPlayer === 'B' ? 'Black' : 'White'}'s Turn</h2>
+        <div style={{ marginBottom: '10px' }}>
+          <strong>Score:</strong> Black {score.black} - White {score.white}
+        </div>
+        {finished && <div style={{ color: 'red', marginBottom: '10px' }}><strong>Game Finished!</strong></div>}
         <BoardContainer>
           <StyledBoard>
             {board.map((row, rowIndex) => (

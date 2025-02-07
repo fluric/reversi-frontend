@@ -15,6 +15,7 @@ export const BoardContainer = styled.div`
     background-color: darkgreen;
     padding: 5px;
     border-radius: 8px;
+    margin-bottom: 5px;
 `;
 
 export const BoardRow = styled.div`
