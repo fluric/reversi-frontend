@@ -32,7 +32,7 @@ class ApiClient {
      * Overrides the default value set in spec file if present
      * @param {String} basePath
      */
-    constructor(basePath = 'https://reversi-backend-958181806194.europe-west6.run.app') {
+    constructor(basePath = 'https://reversi-backend-958181806194.europe-west6.run.app') { // 'http://localhost:8080'
         /**
          * The base URL against which to resolve every API call's (relative) path.
          * @type {String}
@@ -53,7 +53,7 @@ class ApiClient {
          * @default {}
          */
         this.defaultHeaders = {
-            'User-Agent': 'OpenAPI-Generator/1.0.0/Javascript'
+            // 'User-Agent': 'OpenAPI-Generator/1.0.0/Javascript'
         };
 
         /**
