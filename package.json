@@ -12,11 +12,14 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "axios": "^1.7.9",
+    "lodash": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5",
-    "styled-components": "^6.1.14"
+    "styled-components": "^6.1.14",
+    "superagent": "^10.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
