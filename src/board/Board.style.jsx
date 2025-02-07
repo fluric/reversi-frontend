@@ -24,7 +24,7 @@ export const BoardRow = styled.div`
 export const Cell = styled.div`
     width: 50px;
     height: 50px;
-    background-color: ${({ isLastMove }) => (isLastMove ? 'darkgreen' : 'green')};
+    background-color: ${({ $isLastMove }) => ($isLastMove ? 'darkgreen' : 'green')};
     border: 1px solid black;
     display: flex;
     align-items: center;
@@ -50,8 +50,8 @@ export const Cell = styled.div`
     }
 
     /* Highlight valid moves with a subtle circular indicator */
-    ${({ isValidMove }) =>
-            isValidMove &&
+    ${({ $isValidMove }) =>
+            $isValidMove &&
             `
     &:after {
       content: '';

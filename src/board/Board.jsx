@@ -86,8 +86,8 @@ export const Board = () => {
                   return (
                     <Cell
                       key={colIndex}
-                      isLastMove={isLastMove}
-                      isValidMove={isValidMove}
+                      $isLastMove={isLastMove}
+                      $isValidMove={isValidMove}
                       className={cell !== 'E' ? (cell === 'B' ? 'black' : 'white') : ''}
                       onClick={() => handleCellClick(rowIndex, colIndex)}
                     />);
