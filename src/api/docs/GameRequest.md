@@ -5,6 +5,6 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **board** | **[[CellState]]** |  | [optional] 
-**opponent** | [**Player**](Player.md) |  | [optional] 
+**opponent** | [**Opponent**](Opponent.md) |  | [optional] 
 
 

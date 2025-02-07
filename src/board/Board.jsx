@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Container, Segment } from 'semantic-ui-react';
+import { useState } from 'react';
+import { Container, Dropdown, Segment } from 'semantic-ui-react';
 import { StyledBoard, StyledButton, Cell, BoardRow, BoardContainer } from './Board.style';
 import DefaultApi from '../api/DefaultApi.js'; // or GameApi, depending on your generator output
 import _ from 'lodash';
@@ -45,6 +45,8 @@ function initializeNextMoves() {
 
 export const Board = () => {
   const [board, setBoard] = useState(initializeBoard);
+  const [strategy, setStrategy] = useState('RANDOM');
+  const [depth, setDepth] = useState(1);
   const [finished, setFinished] = useState(false);
   const [score, setScore] = useState({ black: 2, white: 2 });
   const [currentPlayer, setCurrentPlayer] = useState('B');
@@ -58,10 +60,11 @@ export const Board = () => {
     // Call the API method for making the opponent's move.
     // The generated API client method may return a Promise.
     apiInstance.makeOpponentMove(gameRequest, (error, data, response) => {
-      const map = new Map()
+      const map = new Map();
       setFinished(response.body.boardInfo.finished);
       setBoard(response.body.boardInfo.board);
       setScore(response.body.boardInfo.score);
+      setLastMove({row: response.body.lastMove.row, col: response.body.lastMove.col})
 
       if (!response.body.boardInfo.finished) {
         response.body.nextMoves.forEach(n => map.set(n.move, n.boardInfo));
@@ -70,7 +73,7 @@ export const Board = () => {
         if (map.keys().next().value.row == null) {
           const anotherGameRequest = {
             board: response.body.boardInfo.board,
-            opponent: 'WHITE',
+            opponent: { color: 'WHITE', strategy, depth },
           };
           makeOpponentMove(anotherGameRequest);
         }
@@ -87,15 +90,16 @@ export const Board = () => {
     const nextBoardInfo = nextMoves.get(key);
     setBoard(nextBoardInfo.board);
     setScore(nextBoardInfo.score);
+    console.log("setScore Bottom", nextBoardInfo.score)
     setFinished(nextBoardInfo.finished);
     setLastMove({ row, col }); // Store the last move's position
     setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B'); // Toggle player
-    setNextMoves(new Map())
+    setNextMoves(new Map());
 
     if (!nextBoardInfo.finished) {
       const gameRequest = {
         board: nextBoardInfo.board,
-        opponent: 'WHITE',
+        opponent: { color: 'WHITE', strategy, depth },
       };
       makeOpponentMove(gameRequest);
     }
@@ -110,6 +114,19 @@ export const Board = () => {
     setScore({ black: 2, white: 2 });
     setNextMoves(initializeNextMoves());
   };
+
+  const strategyOptions = [
+    { key: 'RANDOM', text: 'Random', value: 'RANDOM' },
+    { key: 'GREEDY', text: 'Greedy', value: 'GREEDY', },
+    { key: 'MOBILITY', text: 'Mobility', value: 'MOBILITY'},
+    { key: 'CORNER_AND_MOBILITY', text: 'Corner and Mobility', value: 'CORNER_AND_MOBILITY'}];
+
+  const depthOptions = [
+    { key: '1', text: '1', value: '1' },
+    { key: '2', text: '2', value: '2' },
+    { key: '3', text: '3', value: '3' },
+    { key: '4', text: '4', value: '4' },
+    { key: '5', text: '5', value: '5' }];
 
   return (
     <Container textAlign="center">
@@ -143,6 +160,20 @@ export const Board = () => {
         <StyledButton primary onClick={resetGame}>
           Restart Game
         </StyledButton>
+        <Dropdown
+          placeholder="Strategy"
+          selection
+          options={strategyOptions}
+          onChange={(event, { value }) => setStrategy(value)}
+          value={strategy}
+        />
+        <Dropdown
+          placeholder="Depth"
+          selection
+          options={depthOptions}
+          onChange={(event, { value }) => setDepth(value)}
+          value={depth}
+        />
       </Segment>
     </Container>
   );

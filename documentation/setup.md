@@ -9,5 +9,5 @@ yarn add -D @types/styled-components
 
 ### API creation
 ```
-npx @openapitools/openapi-generator-cli generate  -i src/main/resources/reversiApi.yaml  -g javascript -o src/api
+npx @openapitools/openapi-generator-cli generate  -i src/reversiApi.yaml  -g javascript -o src/api
 ```

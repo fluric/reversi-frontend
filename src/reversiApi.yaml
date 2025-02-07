@@ -1,0 +1,118 @@
+openapi: 3.0.1
+info:
+  title: Reversi API
+  description: API for Reversi game
+  version: 1.0.0
+paths:
+  /api/game/move:
+    post:
+      summary: Make the opponent's move
+      operationId: makeOpponentMove
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GameRequest"
+      responses:
+        "200":
+          description: The updated game state with possible next moves
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GameResponse"
+
+components:
+  schemas:
+    CellState:
+      type: string
+      description: Possible states of a cell in Reversi.
+      enum:
+        - W
+        - B
+        - E
+    Color:
+      type: string
+      description: Color.
+      enum:
+        - WHITE
+        - BLACK
+
+    Opponent:
+      type: object
+      properties:
+        strategy:
+          $ref: "#/components/schemas/Strategy"
+        depth:
+          type: integer
+        color:
+          $ref: "#/components/schemas/Color"
+
+    Strategy:
+      type: string
+      description: Strategy of the opponent.
+      enum:
+        - RANDOM
+        - GREEDY
+        - MOBILITY
+        - CORNER_AND_MOBILITY
+
+    Board:
+      type: array
+      items:
+        type: array
+        items:
+          $ref: "#/components/schemas/CellState"
+
+    BoardInfo:
+      type: object
+      properties:
+        board:
+          $ref: "#/components/schemas/Board"
+        finished:
+          type: boolean
+        score:
+          $ref: "#/components/schemas/Score"
+
+    GameRequest:
+      type: object
+      properties:
+        board:
+          $ref: "#/components/schemas/Board"
+        opponent:
+          $ref: "#/components/schemas/Opponent"
+
+    Move:
+      type: object
+      properties:
+        row:
+          type: integer
+        col:
+          type: integer
+        player:
+          $ref: "#/components/schemas/Color"
+
+    Score:
+      type: object
+      properties:
+        black:
+          type: integer
+        white:
+          type: integer
+
+    GameResponse:
+      type: object
+      properties:
+        boardInfo:
+          $ref: "#/components/schemas/BoardInfo"
+        lastMove:
+          $ref: "#/components/schemas/Move"
+        nextMoves:
+          type: array
+          items:
+            type: object
+            properties:
+              move:
+                $ref: "#/components/schemas/Move"
+              boardInfo:
+                $ref: "#/components/schemas/BoardInfo"

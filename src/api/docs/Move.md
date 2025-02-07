@@ -6,6 +6,6 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **row** | **Number** |  | [optional] 
 **col** | **Number** |  | [optional] 
-**player** | [**Player**](Player.md) |  | [optional] 
+**player** | [**Color**](Color.md) |  | [optional] 
 
 

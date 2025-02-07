@@ -128,12 +128,14 @@ Class | Method | HTTP request | Description
 
  - [ReversiApi.BoardInfo](docs/BoardInfo.md)
  - [ReversiApi.CellState](docs/CellState.md)
+ - [ReversiApi.Color](docs/Color.md)
  - [ReversiApi.GameRequest](docs/GameRequest.md)
  - [ReversiApi.GameResponse](docs/GameResponse.md)
  - [ReversiApi.GameResponseNextMovesInner](docs/GameResponseNextMovesInner.md)
  - [ReversiApi.Move](docs/Move.md)
- - [ReversiApi.Player](docs/Player.md)
+ - [ReversiApi.Opponent](docs/Opponent.md)
  - [ReversiApi.Score](docs/Score.md)
+ - [ReversiApi.Strategy](docs/Strategy.md)
 
 
 ## Documentation for Authorization
