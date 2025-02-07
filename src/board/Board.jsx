@@ -22,16 +22,61 @@ const initializeBoard = () => {
   return board;
 };
 
+function initializeNextMoves() {
+  const map = new Map();
+  const board1 = _.cloneDeep(initializeBoard());
+  board1[2][3] = 'B';
+  board1[3][3] = 'B';
+  map.set({ row: 2, col: 3 }, { board: board1, score: { black: 4, white: 1 }, finished: false });
+  const board2 = _.cloneDeep(initializeBoard());
+  board2[3][2] = 'B';
+  board2[3][3] = 'B';
+  map.set({ row: 3, col: 2 }, { board: board2, score: { black: 4, white: 1 }, finished: false });
+  const board3 = _.cloneDeep(initializeBoard());
+  board3[4][5] = 'B';
+  board3[4][4] = 'B';
+  map.set({ row: 4, col: 5 }, { board: board3, score: { black: 4, white: 1 }, finished: false });
+  const board4 = _.cloneDeep(initializeBoard());
+  board4[5][4] = 'B';
+  board4[4][4] = 'B';
+  map.set({ row: 5, col: 4 }, { board: board4, score: { black: 4, white: 1 }, finished: false });
+  return map;
+}
+
 export const Board = () => {
   const [board, setBoard] = useState(initializeBoard);
   const [finished, setFinished] = useState(false);
   const [score, setScore] = useState({ black: 2, white: 2 });
   const [currentPlayer, setCurrentPlayer] = useState('B');
   const [lastMove, setLastMove] = useState(null);
-  const [nextMoves, setNextMoves] = useState(new Map());
+  const [nextMoves, setNextMoves] = useState(initializeNextMoves);
 
   // Create an instance of the API.
   const apiInstance = new DefaultApi();
+
+  function makeOpponentMove(gameRequest) {
+    // Call the API method for making the opponent's move.
+    // The generated API client method may return a Promise.
+    apiInstance.makeOpponentMove(gameRequest, (error, data, response) => {
+      const map = new Map()
+      setFinished(response.body.boardInfo.finished);
+      setBoard(response.body.boardInfo.board);
+      setScore(response.body.boardInfo.score);
+
+      if (!response.body.boardInfo.finished) {
+        response.body.nextMoves.forEach(n => map.set(n.move, n.boardInfo));
+        setNextMoves(map);
+
+        if (map.keys().next().value.row == null) {
+          const anotherGameRequest = {
+            board: response.body.boardInfo.board,
+            opponent: 'WHITE',
+          };
+          makeOpponentMove(anotherGameRequest);
+        }
+      }
+    });
+  }
 
   const handleCellClick = (row, col) => {
     if (board[row][col] !== 'E') return; // Ignore occupied cells
@@ -45,22 +90,15 @@ export const Board = () => {
     setFinished(nextBoardInfo.finished);
     setLastMove({ row, col }); // Store the last move's position
     setCurrentPlayer(currentPlayer === 'B' ? 'W' : 'B'); // Toggle player
+    setNextMoves(new Map())
 
-    const gameRequest = {
-      board: nextBoardInfo.board,
-      opponent: "WHITE"
-    };
-
-    // Call the API method for making the opponent's move.
-    // The generated API client method may return a Promise.
-    apiInstance.makeOpponentMove(gameRequest, (error, data, response) => {
-      const map = new Map();
-      response.body.nextMoves.forEach(n => map.set(n.move, n.boardInfo))
-      setNextMoves(map)
-      setBoard(response.body.boardInfo.board)
-      setScore(response.body.boardInfo.score);
-      setFinished(response.body.boardInfo.finished);
-    })
+    if (!nextBoardInfo.finished) {
+      const gameRequest = {
+        board: nextBoardInfo.board,
+        opponent: 'WHITE',
+      };
+      makeOpponentMove(gameRequest);
+    }
   };
 
   const resetGame = () => {
@@ -69,26 +107,8 @@ export const Board = () => {
     setCurrentPlayer('B');
     setLastMove(null);
     setFinished(false);
-    setScore({black: 2, white: 2})
-
-    const map = new Map();
-    const board1 = _.cloneDeep(board);
-    board1[2][3] = 'B';
-    board1[3][3] = 'B';
-    map.set({row: 2, col: 3}, {board: board1, score: {black: 4, white: 1}, finished: false})
-    const board2 = _.cloneDeep(board);
-    board2[3][2] = 'B';
-    board2[3][3] = 'B';
-    map.set({row: 3, col: 2}, {board: board2, score: {black: 4, white: 1}, finished: false})
-    const board3 = _.cloneDeep(board);
-    board3[4][5] = 'B';
-    board3[4][4] = 'B';
-    map.set({row: 4, col: 5}, {board: board3, score: {black: 4, white: 1}, finished: false})
-    const board4 = _.cloneDeep(board);
-    board4[5][4] = 'B';
-    board4[4][4] = 'B';
-    map.set({row: 5, col: 4}, {board: board4, score: {black: 4, white: 1}, finished: false})
-    setNextMoves(map);
+    setScore({ black: 2, white: 2 });
+    setNextMoves(initializeNextMoves());
   };
 
   return (
